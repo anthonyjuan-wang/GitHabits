@@ -1,0 +1,111 @@
+.habit-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  border: 1px solid #e1e4e8;
+  width: fit-content;
+  max-width: 100%;
+  padding: 20px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.habit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.log-today-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #e1e4e8;
+  background: white;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+.grid-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  width: max-content;
+  max-width: calc(100vw - 40px); /* Account for container padding */
+}
+
+.day-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px; /* Adjust to align with grid */
+  color: #666;
+  font-size: 12px;
+}
+
+.day-label {
+  height: 10px;  /* Should match your grid cell height */
+  font-size: 12px;
+  color: #666;
+}
+
+.grid-content {
+  min-width: 0;
+}
+
+.month-labels {
+  display: flex;
+  gap: calc(4.5%);
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 12px;
+  min-width: max-content;
+}
+
+.contribution-grid {
+  display: flex;
+  gap: 4px;
+  min-width: max-content;
+}
+
+.week-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grid-cell {
+  width: clamp(10px, 1.5vw, 15px);
+  height: clamp(10px, 1.5vw, 15px);
+  border-radius: 2px;
+  background-color: #ebedf0;
+}
+
+.empty-cell {
+  background-color: #ebedf0;
+}
+
+.contribution-0 { background-color: #ebedf0; }
+.contribution-1 { background-color: #9be9a8; }
+.contribution-2 { background-color: #40c463; }
+.contribution-3 { background-color: #30a14e; }
+.contribution-4 { background-color: #216e39; }
+
+.stats-and-button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats-container {
+  color: #666;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.day-labels-container {
+} 
