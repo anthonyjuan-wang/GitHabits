@@ -1,0 +1,43 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.create-habit-btn, .logout-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-habit-btn {
+  background-color: #2ea44f;
+  color: white;
+  border-color: #2ea44f;
+}
+
+.create-habit-btn:hover {
+  background-color: #2c974b;
+}
+
+.logout-btn:hover {
+  background-color: #f8f8f8;
+} 

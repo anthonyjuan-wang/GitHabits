@@ -1,39 +1,92 @@
 const express = require('express');
 const router = express.Router();
-const Habit = require('../models/Habit');
+const User = require('../models/User');
+const auth = require('../middleware/auth');
 
-// Get all habits for a user
-router.get('/api/habits', async (req, res) => {
+// Get all habits for the authenticated user
+router.get('/', auth, async (req, res) => {
   try {
-    const habits = await Habit.find({ userId: req.user.id });
-    res.json(habits);
+    console.log('GET /api/habits - Request received');
+    console.log('Auth user:', req.user);
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('Found habits:', user.habits);
+    res.json(user.habits);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error in GET /api/habits:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Toggle a habit completion for a specific date
-router.post('/api/habits/:habitId/toggle', async (req, res) => {
+// Create a new habit
+router.post('/', auth, async (req, res) => {
   try {
-    const habit = await Habit.findById(req.params.habitId);
-    const dateToToggle = new Date(req.body.date);
+    console.log('POST /api/habits - Request received');
+    console.log('Request body:', req.body);
+    console.log('Auth user:', req.user);
 
-    const dateExists = habit.completedDates.some(date => 
-      date.toISOString().split('T')[0] === dateToToggle.toISOString().split('T')[0]
-    );
-
-    if (dateExists) {
-      habit.completedDates = habit.completedDates.filter(date => 
-        date.toISOString().split('T')[0] !== dateToToggle.toISOString().split('T')[0]
-      );
-    } else {
-      habit.completedDates.push(dateToToggle);
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    await habit.save();
+    const newHabit = {
+      name: req.body.name,
+      completedDates: []
+    };
+
+    user.habits.push(newHabit);
+    await user.save();
+
+    console.log('New habit created:', newHabit);
+    res.json(newHabit);
+  } catch (error) {
+    console.error('Error in POST /api/habits:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Log habit completion for a specific date
+router.post('/:habitId/log/:date?', auth, async (req, res) => {
+  try {
+    console.log('POST /api/habits/:habitId/log - Request received');
+    console.log('Habit ID:', req.params.habitId);
+    console.log('Date param:', req.params.date);
+    console.log('Auth user:', req.user);
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const habit = user.habits.id(req.params.habitId);
+    if (!habit) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+
+    // Use provided date or current date
+    const completionDate = req.params.date ? new Date(req.params.date) : new Date();
+
+    // Add the date if it doesn't exist
+    if (!habit.completedDates.some(date => date.toISOString().split('T')[0] === completionDate.toISOString().split('T')[0])) {
+      habit.completedDates.push(completionDate);
+    } else {
+      // Remove the date if it exists (toggle functionality)
+      habit.completedDates = habit.completedDates.filter(
+        date => date.toISOString().split('T')[0] !== completionDate.toISOString().split('T')[0]
+      );
+    }
+
+    await user.save();
+    console.log('Updated habit:', habit);
     res.json(habit);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error in POST /api/habits/:habitId/log:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

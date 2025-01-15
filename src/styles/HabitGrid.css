@@ -79,6 +79,11 @@
   height: clamp(10px, 1.5vw, 15px);
   border-radius: 2px;
   background-color: #ebedf0;
+  transition: transform 0.1s ease-in-out;
+}
+
+.grid-cell:hover {
+  transform: scale(1.2);
 }
 
 .empty-cell {
