@@ -31,6 +31,12 @@ const Navbar = ({ onHabitCreated }) => {
     handleClose();
   };
 
+  const handleHabitCreated = (newHabit) => {
+    if (onHabitCreated) {
+      onHabitCreated(newHabit);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">Habit Tracker</div>
@@ -62,7 +68,7 @@ const Navbar = ({ onHabitCreated }) => {
             setShowModal(false);
             setHabitType(null);
           }} 
-          onHabitCreated={onHabitCreated}
+          onHabitCreated={handleHabitCreated}
           type={habitType}
         />
       )}

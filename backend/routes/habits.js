@@ -43,10 +43,44 @@ router.post('/', auth, async (req, res) => {
     user.habits.push(newHabit);
     await user.save();
 
-    console.log('New habit created:', newHabit);
-    res.json(newHabit);
+    // Get the newly created habit with its _id
+    const createdHabit = user.habits[user.habits.length - 1];
+    console.log('New habit created:', createdHabit);
+    res.json(createdHabit);
   } catch (error) {
     console.error('Error in POST /api/habits:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete a habit
+router.delete('/:habitId', auth, async (req, res) => {
+  try {
+    console.log('DELETE /api/habits/:habitId - Request received');
+    console.log('Habit ID:', req.params.habitId);
+    console.log('Auth user:', req.user);
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const habitIndex = user.habits.findIndex(
+      habit => habit._id.toString() === req.params.habitId
+    );
+
+    if (habitIndex === -1) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+
+    // Remove the habit from the array
+    user.habits.splice(habitIndex, 1);
+    await user.save();
+
+    console.log('Habit deleted successfully');
+    res.json({ message: 'Habit deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/habits/:habitId:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

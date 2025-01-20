@@ -5,8 +5,9 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import LogModal from './LogModal';
 
-const HabitGrid = ({ habit, onHabitUpdate }) => {
+const HabitGrid = ({ habit, onHabitUpdate, onDelete }) => {
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const { user, logout } = useAuth();
   const handleLogToday = async (count = 1) => {
@@ -225,8 +226,20 @@ const HabitGrid = ({ habit, onHabitUpdate }) => {
     tooltip.style.top = `${top}px`;
   };
 
+  const handleDelete = () => {
+    onDelete(habit._id);
+    setShowDeleteModal(false);
+  };
+
   return (
     <div className="habit-container">
+      <button 
+        className="delete-habit-btn"
+        onClick={() => setShowDeleteModal(true)}
+      >
+        ×
+      </button>
+      
       <div className="habit-header">
         <h1>{habit.name}</h1>
       </div>
@@ -274,7 +287,7 @@ const HabitGrid = ({ habit, onHabitUpdate }) => {
                       style={{ cursor: date ? 'pointer' : 'default' }}
                     >
                       {date && completedDate && (
-                        <div className="cell-tooltip">
+                        <div className="cell-tooltip" style={{ display: 'none' }}>
                           <span className="tooltip-value">
                             {habit.type === 'binary' ? 'Done' : `${completedDate.count}`}
                           </span>
@@ -320,6 +333,22 @@ const HabitGrid = ({ habit, onHabitUpdate }) => {
           onDelete={handleDeleteLog}
           selectedDate={selectedDate}
         />
+      )}
+      {showDeleteModal && (
+        <div className="confirm-modal-overlay">
+          <div className="confirm-modal">
+            <h3>Delete Habit</h3>
+            <p>Are you sure you want to delete "{habit.name}"? This action cannot be undone.</p>
+            <div className="confirm-modal-buttons">
+              <button className="confirm-no-btn" onClick={() => setShowDeleteModal(false)}>
+                No
+              </button>
+              <button className="confirm-yes-btn" onClick={handleDelete}>
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
