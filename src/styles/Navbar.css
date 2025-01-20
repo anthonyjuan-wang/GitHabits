@@ -16,6 +16,11 @@
 .navbar-buttons {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.dropdown-container {
+  position: relative;
 }
 
 .create-habit-btn, .logout-btn {
@@ -40,4 +45,37 @@
 
 .logout-btn:hover {
   background-color: #f8f8f8;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  min-width: 150px;
+  background: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f8f8f8;
+}
+
+.dropdown-menu button:not(:last-child) {
+  border-bottom: 1px solid #e1e4e8;
 } 

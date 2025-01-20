@@ -52,9 +52,13 @@ const HabitsContainer = () => {
   }, [user]);
 
   const handleHabitUpdate = (updatedHabit) => {
-    setHabits(habits.map(habit => 
-      habit._id === updatedHabit._id ? updatedHabit : habit
-    ));
+    setHabits(prevHabits => {
+      const newHabits = prevHabits.map(habit => 
+        habit._id === updatedHabit._id ? updatedHabit : habit
+      );
+      console.log('Updated habits:', newHabits);
+      return newHabits;
+    });
   };
 
   const handleHabitCreated = (newHabit) => {

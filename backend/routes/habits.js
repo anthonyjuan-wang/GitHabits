@@ -36,6 +36,7 @@ router.post('/', auth, async (req, res) => {
 
     const newHabit = {
       name: req.body.name,
+      type: req.body.type,
       completedDates: []
     };
 
@@ -53,39 +54,68 @@ router.post('/', auth, async (req, res) => {
 // Log habit completion for a specific date
 router.post('/:habitId/log/:date?', auth, async (req, res) => {
   try {
-    console.log('POST /api/habits/:habitId/log - Request received');
-    console.log('Habit ID:', req.params.habitId);
-    console.log('Date param:', req.params.date);
-    console.log('Auth user:', req.user);
-
     const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     const habit = user.habits.id(req.params.habitId);
-    if (!habit) {
-      return res.status(404).json({ message: 'Habit not found' });
-    }
+    if (!habit) return res.status(404).json({ message: 'Habit not found' });
 
-    // Use provided date or current date
     const completionDate = req.params.date ? new Date(req.params.date) : new Date();
+    const dateString = completionDate.toISOString().split('T')[0];
+    const count = req.body.count || 1;
 
-    // Add the date if it doesn't exist
-    if (!habit.completedDates.some(date => date.toISOString().split('T')[0] === completionDate.toISOString().split('T')[0])) {
-      habit.completedDates.push(completionDate);
+    // Find if date already exists
+    const existingDateIndex = habit.completedDates.findIndex(entry => 
+      entry.date.toISOString().split('T')[0] === dateString
+    );
+
+    if (habit.type === 'binary') {
+      // For binary habits, always add the date if it doesn't exist
+      if (existingDateIndex === -1) {
+        habit.completedDates.push({ date: completionDate, count: 1 });
+      }
+      // If the date exists, do nothing (keep the existing entry)
     } else {
-      // Remove the date if it exists (toggle functionality)
-      habit.completedDates = habit.completedDates.filter(
-        date => date.toISOString().split('T')[0] !== completionDate.toISOString().split('T')[0]
-      );
+      // For numeric habits, set the exact count value
+      if (existingDateIndex === -1) {
+        habit.completedDates.push({ date: completionDate, count: count });
+      } else {
+        habit.completedDates[existingDateIndex].count = count;
+      }
     }
 
     await user.save();
-    console.log('Updated habit:', habit);
     res.json(habit);
   } catch (error) {
-    console.error('Error in POST /api/habits/:habitId/log:', error);
+    console.error('Error logging habit:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete habit completion for a specific date
+router.delete('/:habitId/log/:date', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const habit = user.habits.id(req.params.habitId);
+    if (!habit) return res.status(404).json({ message: 'Habit not found' });
+
+    const dateToDelete = new Date(req.params.date);
+    const dateString = dateToDelete.toISOString().split('T')[0];
+
+    const existingDateIndex = habit.completedDates.findIndex(entry => 
+      entry.date.toISOString().split('T')[0] === dateString
+    );
+
+    if (existingDateIndex !== -1) {
+      habit.completedDates.splice(existingDateIndex, 1);
+      await user.save();
+    }
+
+    res.json(habit);
+  } catch (error) {
+    console.error('Error deleting habit log:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

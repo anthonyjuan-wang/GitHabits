@@ -2,9 +2,21 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 95vw;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.habit-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  overflow-x: auto;
 }
 
 .no-habits {
@@ -14,4 +26,21 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #666;
-} 
+}
+
+@media screen and (max-width: 768px) {
+  .habits-container {
+    width: 90vw;
+    padding: 0.5rem;
+  }
+
+  .habit-card {
+    padding: 1rem;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .habits-container {
+    width: 85vw;
+  }
+}

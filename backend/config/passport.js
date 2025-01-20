@@ -28,14 +28,7 @@ passport.use(
             googleId: profile.id,
             email: profile.emails[0].value,
             username: profile.displayName,
-            habits: [{
-              name: "Daily Exercise",
-              completedDates: [
-                new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),  // 2 days ago
-                new Date(Date.now() - 24 * 60 * 60 * 1000),      // 1 day ago
-                new Date()                                        // today
-              ]
-            }]
+            habits: []
           });
           console.log('New user created with test habit:', user);
         } else {

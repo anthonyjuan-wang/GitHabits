@@ -5,8 +5,14 @@ const habitSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  type: {
+    type: String,
+    enum: ['binary', 'numeric'],
+    required: true
+  },
   completedDates: [{
-    type: Date
+    date: { type: Date, required: true },
+    count: { type: Number, default: 1 }
   }]
 }, {
   timestamps: true

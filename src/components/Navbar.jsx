@@ -1,44 +1,34 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import '../styles/Navbar.css';
+import HabitModal from './HabitModal';
 
 const Navbar = ({ onHabitCreated }) => {
   const { user, logout } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [habitType, setHabitType] = useState(null);
+  const buttonRef = useRef(null);
+  
+  const handleClick = () => {
+    setShowDropdown(!showDropdown);
+  };
 
-  const handleCreateHabit = async () => {
-    try {
-      console.log('Making request to:', `${process.env.REACT_APP_BACKEND_URL}/api/habits`);
-      console.log('With token:', user.token);
-      
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/habits`,
-        { name: 'New Habit' },
-        {
-          headers: {
-            'Authorization': `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      console.log('Habit created:', response.data);
-      if (onHabitCreated) {
-        onHabitCreated(response.data);
-      }
-    } catch (error) {
-      console.error('Error creating habit:', error);
-      console.log('Error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers
-      });
-      
-      if (error.response?.status === 401) {
-        console.log('Unauthorized - logging out');
-        logout();
-      }
-    }
+  const handleClose = () => {
+    setShowDropdown(false);
+  };
+
+  const handleCheckboxSelect = () => {
+    setHabitType('binary');
+    setShowModal(true);
+    handleClose();
+  };
+
+  const handleNumberSelect = () => {
+    setHabitType('numeric');
+    setShowModal(true);
+    handleClose();
   };
 
   return (
@@ -46,13 +36,35 @@ const Navbar = ({ onHabitCreated }) => {
       <div className="navbar-brand">Habit Tracker</div>
       {user && (
         <div className="navbar-buttons">
-          <button className="create-habit-btn" onClick={handleCreateHabit}>
-            Create Habit
-          </button>
+          <div className="dropdown-container">
+            <button 
+              ref={buttonRef}
+              className="create-habit-btn" 
+              onClick={handleClick}
+            >
+              Create Habit ▼
+            </button>
+            {showDropdown && (
+              <div className="dropdown-menu">
+                <button onClick={handleNumberSelect}>Number</button>
+                <button onClick={handleCheckboxSelect}>Checkbox</button>
+              </div>
+            )}
+          </div>
           <button className="logout-btn" onClick={logout}>
             Logout
           </button>
         </div>
+      )}
+      {showModal && (
+        <HabitModal 
+          onClose={() => {
+            setShowModal(false);
+            setHabitType(null);
+          }} 
+          onHabitCreated={onHabitCreated}
+          type={habitType}
+        />
       )}
     </nav>
   );
